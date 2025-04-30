@@ -1,0 +1,46 @@
+@startuml
+
+!include <C4/C4_Container>
+
+LAYOUT_TOP_DOWN()
+LAYOUT_WITH_LEGEND()
+
+' Внешние сущности
+
+Person(user, "Пользователь", "Управляет системой отопления")
+
+Person(superUser, "Специалист", "Управляет подключением устройств к системе отопления")
+
+
+  
+' Контейнеры системы
+
+System_Boundary(system, "Heating System Service") {
+
+    Container(api, "Web Application", "Java, Spring MVC, PostgreSQL", "Позволяет пользователям получать состояние и управлять работой системы отопления")
+
+}
+
+
+' Устройства IoT
+
+System_Ext(iot, "IoT Heating Devices") {
+
+    Container_Ext(sensor, "sensor", "", "Датчик температуры")
+
+    Container_Ext(controller, "controller", "", "Включить/выключить")
+}
+
+
+' Потоки данных
+
+Rel(user, api, "Commands")
+
+Rel(superUser, api, "Commands")
+
+Rel(sensor, api, "State")
+
+Rel(api, controller, "Commands")
+
+
+@enduml

@@ -1,0 +1,91 @@
+openapi: 3.0.4
+info:
+  title: Сервис Умный Дом 2.0
+servers:
+  - url: http://api.example.com/api/v1
+    description: Optional server description, e.g. Main (production) server
+  - url: http://staging-api.example.com/api/v1
+    description: Optional server description, e.g. Internal staging server for testing
+tags: 
+  - name: device
+    description: Device operations 
+paths:
+  /device/{device_id}/state:
+    get:
+      tags: 
+        -  device
+      description: Returns a state of device by id
+      operationId: getState
+      parameters:
+        - in: path
+          name: device_id
+          schema:
+            type: integer
+          required: true
+          description: ID of device
+      responses:
+        "200":
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeviceStateResponse"
+        "400":
+          description: Bad request.
+        "401":
+          description: Authorization information is missing or invalid.
+        "404":
+          description: ID was not found.
+        "500":
+          description: Unexpected error.
+  /device/{device_id}/call/{command_name}:
+    post:
+      tags: 
+        -  device
+      description: Call a command for device by id
+      operationId: callCommand
+      parameters:
+        - in: path
+          name: device_id
+          schema:
+            type: integer
+          required: true
+          description: ID of device
+        - in: path
+          name: command_name
+          schema:
+            type: string
+            enum: 
+              - on
+              - off
+              - open
+              - close
+          required: true
+          description: Name of command
+      responses:
+        "201":
+          description: A successful response.
+        "400":
+          description: Bad request.
+        "401":
+          description: Authorization information is missing or invalid.
+        "404":
+          description: ID was not found.
+        "500":
+          description: Unexpected error.
+components:
+  schemas: 
+    DeviceStateResponse:
+      type: object
+      properties:
+        state:
+          type: object
+          properties:
+            temperature:
+              type: integer
+              description: Temperature in Celsius
+            switch:
+              type: string
+              description: Is switch on/off
+
+  

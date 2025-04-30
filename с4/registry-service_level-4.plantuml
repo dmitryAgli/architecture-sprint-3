@@ -1,0 +1,99 @@
+@startuml registry service
+
+' Классы
+
+together {
+
+    class Cctv {
+        - isSwitchOff: boolean
+        + switchOn(): void
+        + switchOff(): void
+    }
+
+    class Gate {
+        - isClosed: boolean
+        + open(): void
+        + close(): void
+    }
+
+    class Heat {
+        - temperature: int
+        - isSwitchOff: boolean
+        + switchOn(): void
+        + switchOff(): void
+    }
+
+    class Light {
+        - isSwitchOff: boolean
+        + switchOn(): void
+        + switchOff(): void
+    }
+
+}
+
+together {
+
+    class SwitchOn {
+        + switchOn(Device)
+        + execute(): void
+    }
+
+    class SwitchOff {
+        + switchOff(Device)
+        + execute(): void
+    }
+
+    class Open {
+        + open(Device)
+        + execute(): void
+    }
+
+    class Close {
+        + close(Device)
+        + execute(): void
+    }
+
+}
+
+class Controller {
+    + Controller()
+}
+
+interface Device {
+    + switchOn(): void
+    + switchOff(): void
+    + open(): void
+    + close(): void
+}
+
+interface Command {
+    + execute(): void
+}
+
+interface ControllerInterface {
+    + callDevice(String: deviceId): void
+    + addCommand(String: commandName): void
+}
+
+' Взаимосвязи между классами
+
+Cctv    ..|>    Device
+Gate    ..|>    Device
+Heat    ..|>    Device
+Light   ..|>    Device
+
+SwitchOn    -->    Device
+SwitchOff   -->    Device
+Open        -->    Device
+Close       -->    Device
+
+SwitchOn    ..|>    Command
+SwitchOff   ..|>    Command
+Open        ..|>    Command
+Close       ..|>    Command
+
+Controller  --> "0..*" Command: commandSet
+
+Controller  ..|>    ControllerInterface
+
+@enduml

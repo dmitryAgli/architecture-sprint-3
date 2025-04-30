@@ -1,0 +1,78 @@
+@startuml
+
+' hide the spot
+' hide circle
+
+' avoid problems with angled crows feet
+skinparam linetype ortho
+
+entity "User" {
+  *id : int <<PK>>
+  --- 
+  name : text
+  email : text
+  password : text
+  is_active : boolean
+}
+
+entity "Device" {
+  *id : int <<PK>>
+  ---
+  user_id : int <<FK>>
+  device_type_id : int <<FK>>
+  name : text
+  is_active : boolean
+}
+
+entity "DeviceType" {
+  *id : int <<PK>>
+  ---
+  type : text
+}
+
+entity "DeviceState" {
+  *id : int <<PK>>
+  ---
+  device_id : int <<FK>>
+  state_type_id : int <<FK>>
+  state : bool
+  timestamp : timestamp
+}
+
+entity "StateType" {
+  *id : int <<PK>>
+  ---
+  type : text
+}
+
+entity "DeviceTelemetry" {
+  *id : int <<PK>>
+  ---
+  device_id : int <<FK>>
+  telemetry_type_id : int <<FK>>
+  value : text
+  timestamp : timestamp
+}
+
+entity "TelemetryType" {
+  *id : int <<PK>>
+  ---
+  type : text
+  unit : text
+  min_value : text
+  max_value : text
+}
+
+
+
+' Взаимосвязи между сущностями
+
+User    ||..o{  Device
+Device  |o..o{  DeviceType
+Device  |o..o{  DeviceState
+Device  |o..o{  DeviceTelemetry
+DeviceState  |o..o{  StateType
+DeviceTelemetry  |o..o{  TelemetryType
+
+
+@enduml

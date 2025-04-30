@@ -1,0 +1,58 @@
+@startuml
+
+!include <C4/C4_Container>
+!include <C4/C4_Component>
+
+LAYOUT_TOP_DOWN()
+
+LAYOUT_WITH_LEGEND()
+
+System_Boundary(system, "Сервис Умный Дом 2.0") {
+
+    Container(device, "Registry Service", "Java, Spring Boot", "Сервис управления/регистрации устройств") {
+    
+        Component(consume, "eventHandler", "", "Подписывается на топики сообщений и вызывает команды на устройствах пользователя")
+        
+        Component(handler, "Обработчик команд", "", "Вызывает команды на устройстве пользователя")
+        
+        Component(registry, "Регистратор", "", "Регистрирует новые устройства пользователя")
+
+    }
+
+
+    Container(bus, "Event Bus", "Apache Kafka", "Обмен событиями между компонентами системы")
+
+    Container(dbr, "Database", "MongoDB", "Сохраняет данные об устройстве пользователей")
+
+    Container(heat, "Heat Device Adapter", "Python", "Сервис взаимодействия с устройствами системы отопления")
+    
+    Container(light, "Light Device Adapter", "Python", "Сервис взаимодействия с устройствами освещения")
+    
+    Container(gate, "Gate Device Adapter", "Python", "Сервис взаимодействия с уличными воротами")
+    
+    Container(cctv, "CCTV Device Adapter", "Python", "Сервис взаимодействия с камерами видеонаблюдения")
+
+
+}
+
+
+Rel(handler, dbr, "Read")
+Rel(registry, dbr, "Write")
+
+Rel(bus, consume, "[async] Подписывается на топики")
+
+Rel(consume, handler, "[async] Вызывает обработчик команд")
+
+Rel(handler, heat, "[rest] Вызывает команды устройству")
+Rel(handler, light, "[rest] Вызывает команды устройству")
+Rel(handler, gate, "[rest] Вызывает команды устройству")
+Rel(handler, cctv, "[rest] Вызывает команды устройству")
+
+Rel(heat, registry, "[rest] Регистрирует устройство")
+Rel(light, registry, "[rest] Регистрирует устройство")
+Rel(gate, registry, "[rest] Регистрирует устройство")
+Rel(cctv, registry, "[rest] Регистрирует устройство")
+
+
+
+@enduml

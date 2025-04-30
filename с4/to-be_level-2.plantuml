@@ -1,0 +1,117 @@
+@startuml
+
+!include <C4/C4_Container>
+
+LAYOUT_TOP_DOWN()
+LAYOUT_WITH_LEGEND()
+
+
+' Внешние сущности
+
+Person(user, "Пользователь", "Управляет устройствами подключенными к сервису Умный Дом")
+
+  
+' Контейнеры системы
+
+System_Boundary(system, "Сервис Умный Дом 2.0") {
+
+    Container(gtw, "Gateway", "Java, Spring Cloud", "Сервис взаимодействия с приложениями")
+    
+    Container(ui, "SPA", "Angular JS", "Веб-интерфейс для взаимодействия с пользователем")
+    
+    Container(sdk, "Mobile App", "iOS, Android", "Приложение для взаимодействия с пользователем")
+
+    Container(api, "BFF Service", "Java, Spring Boot", "Сервис обработки запросов из UI-приложений")
+
+    Container(heat, "Heat Device Adapter", "Python", "Сервис взаимодействия с устройствами системы отопления")
+    
+    Container(light, "Light Device Adapter", "Python", "Сервис взаимодействия с устройствами освещения")
+    
+    Container(gate, "Gate Device Adapter", "Python", "Сервис взаимодействия с уличными воротами")
+    
+    Container(cctv, "CCTV Device Adapter", "Python", "Сервис взаимодействия с камерами видеонаблюдения")
+
+    Container(bus, "Event Bus", "Apache Kafka", "Обмен событиями между компонентами системы")
+
+    Container(device, "Registry Service", "Java, Spring Boot", "Сервис управления/регистрации устройств")
+    
+    Container(state, "State Service", "Java, Spring Boot", "Отслеживает телеметрию и состояние устройств пользователей")
+
+    ' Container(dbs, "Database", "Cassandra", "Сохраняет данные о состоянии устройства")
+    ' Не показан на схеме для удобства ее чтения
+    
+    ' Container(dbr, "Database", "MongoDB", "Сохраняет данные об устройстве пользователей")
+    ' Не показан на схеме для удобства ее чтения
+
+}
+
+
+
+' Устройства IoT
+
+System_Ext(iot_heat, "IoT Heating Devices") {
+
+    Container_Ext(iot_heat_sensor, "sensor", "", "Датчик температуры")
+
+    Container_Ext(iot_heat_controller, "controller", "", "Включить/Выключить")
+}
+
+System_Ext(iot_light, "IoT Lighting Devices") {
+
+    Container_Ext(iot_light_controller, "controller", "", "Включить/Выключить")
+}
+
+System_Ext(iot_gate, "IoT Gate Devices") {
+
+    Container_Ext(iot_gate_controller, "controller", "", "Открыть/Закрыть")
+}
+
+System_Ext(iot_cctv, "IoT CCTV Devices") {
+
+    Container_Ext(iot_cctv_controller, "controller", "", "Включить/Выключить")
+}
+
+System_Ext(auth, "Keycloak Auth Service") {
+
+    Container_Ext(auth_ui, "client UI", "", "Login/Logout")
+
+}
+
+
+' Потоки данных
+
+Rel(user, ui, "")
+
+Rel(user, sdk, "")
+
+Rel(ui, gtw, "Call Services")
+
+Rel(sdk, gtw, "Call Services")
+
+Rel(gtw, api, "Call Services")
+Rel(gtw, auth_ui, "Authenticate")
+
+'Rel(ui, gtw, "getState")
+
+Rel(api, bus, "Command")
+Rel(api, state, "getState")
+
+Rel(device, heat, "Command")
+Rel(device, light, "Command")
+Rel(device, gate, "Command")
+Rel(device, cctv, "Command")
+
+Rel(heat, iot_heat_controller, "Command")
+Rel(heat, bus, "State")
+Rel(iot_heat_sensor, heat, "State")
+
+Rel(light, iot_light_controller, "Command")
+
+Rel(cctv, iot_cctv_controller, "Command")
+
+Rel(gate, iot_gate_controller, "Command")
+
+Rel(bus, device, "Command")
+Rel(bus, state, "State")
+
+@enduml
