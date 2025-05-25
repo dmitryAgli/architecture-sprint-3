@@ -1,0 +1,43 @@
+@startuml
+
+!include <C4/C4_Container>
+!include <C4/C4_Component>
+
+LAYOUT_TOP_DOWN()
+
+LAYOUT_WITH_LEGEND()
+
+System_Boundary(system, "Сервис Умный Дом 2.0") {
+
+    Container(state, "State Service", "Java, Spring Boot", "Отслеживает телеметрию и состояние устройств пользователей") {
+        
+        Component(getState, "GET /api/v1/device/{device_id}/state", "Spring MVC Rest Controller", "Получить данные по телеметрии и состояние устройства пользователя")
+    
+        Component(consume, "eventHandler", "", "Подписывается на топики и обрабатывает сообщения о состоянии и телеметрии устройств")
+
+    }
+
+    Container(bus, "Event Bus", "Apache Kafka", "Обмен событиями между компонентами системы")
+
+    Container(bff, "BFF Service", "Java, Spring Boot", "Сервис обработки запросов из UI-приложений")
+
+    Container(dbs, "Database", "Cassandra", "Сохраняет данные о состоянии устройства")
+
+
+}
+
+Rel(bff, getState, "[rest]")
+
+Rel(getState, dbs, "[cql] Read")
+Rel(consume, dbs, "[cql] Write")
+
+Rel(consume, bus, "[async] Подписывается на топики")
+
+' Rel(getState, state, "[rest] Запрашивает данные")
+
+
+' Rel(gtw, getState, "[rest]")
+
+
+
+@enduml

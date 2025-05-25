@@ -1,0 +1,44 @@
+@startuml
+
+!include <C4/C4_Container>
+!include <C4/C4_Component>
+
+LAYOUT_TOP_DOWN()
+
+LAYOUT_WITH_LEGEND()
+
+System_Boundary(system, "Сервис Умный Дом 2.0") {
+
+    Container(cctv, "CCTV Device Adapter", "Python", "Сервис взаимодействия с камерами видеонаблюдения") {
+
+        Component(rpc, "stateHandler", "", "Передает данные о состоянии и телеметрии устройства")
+        
+        Component(event, "eventHandler", "", "Публикует сообщения о состоянии и телеметрии устройства")
+        
+        Component(command, "commandHandler", "", "Обрабатывает команды для передачи на устройство")
+
+    }
+
+    Container(device, "Registry Service", "Java, Spring Boot", "Сервис управления/регистрации устройств")
+
+    Container(bus, "Event Bus", "Apache Kafka", "Обмен событиями между компонентами системы")
+
+}
+
+System_Ext(iot_cctv, "IoT CCTV Devices") {
+
+    Container_Ext(iot_cctv_controller, "controller", "", "Включить/Выключить")
+}
+
+Rel(event, bus, "[async] Публикует сообщения в брокер")
+
+Rel(iot_cctv_controller, rpc, "[rpc] Передает данные о состоянии устройства")
+
+Rel(rpc, event, "[rpc] Передает сообщение в обработчик")
+
+Rel(device, command, "[rest] Вызывает команды устройства")
+
+Rel(command, iot_cctv_controller, "[rpc] Вызывает команды устройства")
+
+
+@enduml

@@ -1,0 +1,222 @@
+asyncapi: 3.0.0
+info:
+  title: Сервис Умный дом 2.0
+  version: 0.0.1
+channels:
+  heatTelemetry:
+    address: smartHome.heatDevice.1.0.event.{deviceId}.temperature.telemetry
+    messages:
+      heatTemperatureTelemetry:
+        $ref: '#/components/messages/heatTemperatureTelemetry'
+    description: The topic on which measured values may be produced and consumed.
+    parameters:
+      deviceId:
+        $ref: '#/components/parameters/deviceId'
+  heatSwitchOn:
+    address: smartHome.heatDevice.1.0.action.{deviceId}.switch.on
+    messages:
+      switchOn:
+        $ref: '#/components/messages/switchDeviceOnOff'
+    parameters:
+      deviceId:
+        $ref: '#/components/parameters/deviceId'
+  heatSwitchOff:
+    address: smartHome.heatDevice.1.0.action.{deviceId}.switch.off
+    messages:
+      switchOff:
+        $ref: '#/components/messages/switchDeviceOnOff'
+    parameters:
+      deviceId:
+        $ref: '#/components/parameters/deviceId'
+  lightSwitchOn:
+    address: smartHome.lightDevice.1.0.action.{deviceId}.switch.on
+    messages:
+      switchOn:
+        $ref: '#/components/messages/switchDeviceOnOff'
+    parameters:
+      deviceId:
+        $ref: '#/components/parameters/deviceId'
+  lightSwitchOff:
+    address: smartHome.lightDevice.1.0.action.{deviceId}.switch.off
+    messages:
+      switchOff:
+        $ref: '#/components/messages/switchDeviceOnOff'
+    parameters:
+      deviceId:
+        $ref: '#/components/parameters/deviceId'
+  cameraSwitchOn:
+    address: smartHome.cameraDevice.1.0.action.{deviceId}.switch.on
+    messages:
+      switchOn:
+        $ref: '#/components/messages/switchDeviceOnOff'
+    parameters:
+      deviceId:
+        $ref: '#/components/parameters/deviceId'
+  cameraSwitchOff:
+    address: smartHome.cameraDevice.1.0.action.{deviceId}.switch.off
+    messages:
+      switchOff:
+        $ref: '#/components/messages/switchDeviceOnOff'
+    parameters:
+      deviceId:
+        $ref: '#/components/parameters/deviceId'
+  gateSwitchOpen:
+    address: smartHome.gateDevice.1.0.action.{deviceId}.switch.open
+    messages:
+      switchOpen:
+        $ref: '#/components/messages/switchDeviceOpenClose'
+    parameters:
+      deviceId:
+        $ref: '#/components/parameters/deviceId'
+  gateSwitchClose:
+    address: smartHome.gateDevice.1.0.action.{deviceId}.switch.close
+    messages:
+      switchClose:
+        $ref: '#/components/messages/switchDeviceOpenClose'
+    parameters:
+      deviceId:
+        $ref: '#/components/parameters/deviceId'
+operations:
+  receiveHeatTemperatureTelemetry:
+    action: receive
+    channel:
+      $ref: '#/channels/heatTelemetry'
+    summary: >-
+      Inform about temperature conditions from sensor of heating device.
+    traits:
+      - $ref: '#/components/operationTraits/kafka'
+    messages:
+      - $ref: '#/channels/heatTelemetry/messages/heatTemperatureTelemetry'
+  heatSwitchOn:
+    action: send
+    channel:
+      $ref: '#/channels/heatSwitchOn'
+    traits:
+      - $ref: '#/components/operationTraits/kafka'
+    messages:
+      - $ref: '#/channels/heatSwitchOn/messages/switchOn'
+  heatSwitchOff:
+    action: send
+    channel:
+      $ref: '#/channels/heatSwitchOff'
+    traits:
+      - $ref: '#/components/operationTraits/kafka'
+    messages:
+      - $ref: '#/channels/heatSwitchOff/messages/switchOff'
+  lightSwitchOn:
+    action: send
+    channel:
+      $ref: '#/channels/heatSwitchOn'
+    traits:
+      - $ref: '#/components/operationTraits/kafka'
+    messages:
+      - $ref: '#/channels/heatSwitchOn/messages/switchOn'
+  lightSwitchOff:
+    action: send
+    channel:
+      $ref: '#/channels/heatSwitchOff'
+    traits:
+      - $ref: '#/components/operationTraits/kafka'
+    messages:
+      - $ref: '#/channels/heatSwitchOff/messages/switchOff'
+  cameraSwitchOn:
+    action: send
+    channel:
+      $ref: '#/channels/heatSwitchOn'
+    traits:
+      - $ref: '#/components/operationTraits/kafka'
+    messages:
+      - $ref: '#/channels/heatSwitchOn/messages/switchOn'
+  cameraSwitchOff:
+    action: send
+    channel:
+      $ref: '#/channels/heatSwitchOff'
+    traits:
+      - $ref: '#/components/operationTraits/kafka'
+    messages:
+      - $ref: '#/channels/heatSwitchOff/messages/switchOff'
+  gateSwitchOpen:
+    action: send
+    channel:
+      $ref: '#/channels/gateSwitchOpen'
+    traits:
+      - $ref: '#/components/operationTraits/kafka'
+    messages:
+      - $ref: '#/channels/gateSwitchOpen/messages/switchOpen'
+  gateSwitchClose:
+    action: send
+    channel:
+      $ref: '#/channels/gateSwitchClose'
+    traits:
+      - $ref: '#/components/operationTraits/kafka'
+    messages:
+      - $ref: '#/channels/gateSwitchClose/messages/switchClose'
+components:
+  messages:
+    heatTemperatureTelemetry:
+      name: heatTemperatureTelemetry
+      title: Heating Device Temperature Telemetry
+      summary: >-
+        Inform about temperature conditions from sensor of heating device.
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/heatTemperatureTelemetryPayload'
+    switchDeviceOnOff:
+      name: switchOnOff
+      title: Switch on/off
+      summary: Command a particular device to switch it on or off.
+      payload:
+        $ref: '#/components/schemas/switchOnOffPayload'
+    switchDeviceOpenClose:
+      name: switchOpenClose
+      title: Switch open/close
+      summary: Command a particular device to switch it open or close.
+      payload:
+        $ref: '#/components/schemas/switchOnOffPayload'
+  schemas:
+    heatTemperatureTelemetryPayload:
+      type: object
+      properties:
+        temperature:
+          type: integer
+          minimum: 0
+          description: Temperature measured in celsius.
+        sentAt:
+          $ref: '#/components/schemas/sentAt'
+    switchOnOffPayload:
+      type: object
+      properties:
+        command:
+          type: string
+          enum:
+            - 'on'
+            - 'off'
+          description: Whether to turn on or off.
+        sentAt:
+          $ref: '#/components/schemas/sentAt'
+    switchOpenClosePayload:
+      type: object
+      properties:
+        command:
+          type: string
+          enum:
+            - 'open'
+            - 'close'
+          description: Whether open or close.
+        sentAt:
+          $ref: '#/components/schemas/sentAt'
+    sentAt:
+      type: string
+      format: date-time
+      description: Date and time when the message was sent.
+  parameters:
+    deviceId:
+      description: The ID of the device.
+  operationTraits:
+    kafka:
+      bindings:
+        kafka:
+          clientId:
+            type: string
+            enum:
+              - my-app-id
